@@ -3,11 +3,11 @@
 /* appearance */
 //static const char font[]            = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
 //static const char font[]            = "-*-nimbus sans l-medium-r-normal-*-14-*-*-*-*-*-*-*";
-static const char font[]            = "Mono 8";
+static const char font[]            = "Mono 10";
 static const char normbordercolor[] = "#444444";
 static const char normbgcolor[]     = "#222222";
 static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#700000";
+static const char selbordercolor[]  = "#bbbbbb";
 static const char selbgcolor[]      = "#700000";
 static const char selfgcolor[]      = "#eeeeee";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -25,6 +25,8 @@ static const Rule rules[] = {
 	{ "Google-chrome",   NULL,       NULL,       1 << 9,       False,       -1 },
         { "Amarok",          NULL,       NULL,       1 << 10,      False,       -1 },    
 	{ "Pidgin",          NULL,       NULL,       1 << 11,      False,       -1 },
+	{ "HTOP",            NULL,       NULL,       1 << 8,       False,       -1 },
+	{ "NCMPCPP",         NULL,       NULL,       1 << 10,      False,       -1 },
 };
 
 /* layout(s) */
@@ -37,6 +39,24 @@ static const Layout layouts[] = {
 	{ "[]=",      tile },    /* first entry is default */
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
+};
+
+/* pertag-static */
+static TagConfig pertag[LENGTH(tags) + 1] = {
+    /*  nlayout       nmaster       showbar          mfact */ 
+        DEFAULT_TAG, /* 0 */
+        DEFAULT_TAG, /* 1 */
+        DEFAULT_TAG, /* 2 */
+        DEFAULT_TAG, /* 3 */
+        DEFAULT_TAG, /* 4 */
+        DEFAULT_TAG, /* 5 */
+        DEFAULT_TAG, /* 6 */
+        DEFAULT_TAG, /* 7 */
+        DEFAULT_TAG, /* 8 */
+        DEFAULT_TAG, /* 9 */
+        { 2,            1,            1,               0.55 }, /* q */
+        DEFAULT_TAG, /* w */
+        { 0,            1,            1,               0.8  }, /* e */
 };
 
 /* key definitions */
@@ -54,6 +74,7 @@ static const Layout layouts[] = {
 /* commands */
 static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "uxterm", NULL };
+static const char *lockcmd[]  = { "slock", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -82,8 +103,12 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
         { 0,                            0x1008ff12,spawn,          SHCMD("volume mute") },
+        { MODKEY,                       0x1008ff12,spawn,          SHCMD("mpc toggle") },
         { 0,                            0x1008ff11,spawn,          SHCMD("volume dec") },
+        { MODKEY,                       0x1008ff11,spawn,          SHCMD("mpc prev") },
         { 0,                            0x1008ff13,spawn,          SHCMD("volume inc") },
+        { MODKEY,                       0x1008ff13,spawn,          SHCMD("mpc next") },
+        { ALT|ControlMask,              XK_l,      spawn,          {.v = lockcmd } },        
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
