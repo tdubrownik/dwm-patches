@@ -1,0 +1,78 @@
+diff -up dwm-6.0/config.def.h dwm-6.0-pango/config.def.h
+--- dwm-6.0/config.def.h	2011-12-19 16:02:46.000000000 +0100
++++ dwm-6.0-pango/config.def.h	2012-01-18 16:30:17.998984258 +0100
+@@ -34,6 +34,23 @@ static const Layout layouts[] = {
+ 	{ "[M]",      monocle },
+ };
+ 
++/* pertag-static */
++static TagConfig pertag[LENGTH(tags) + 1] = {
++    /*  nlayout       nmaster       showbar          mfact    
++        { 2,            1,            1,               0.55 }, 
++    */
++        DEFAULT_TAG, /* 0 */
++        DEFAULT_TAG, /* 1 */
++        DEFAULT_TAG, /* 2 */
++        DEFAULT_TAG, /* 3 */
++        DEFAULT_TAG, /* 4 */
++        DEFAULT_TAG, /* 5 */
++        DEFAULT_TAG, /* 6 */
++        DEFAULT_TAG, /* 7 */
++        DEFAULT_TAG, /* 8 */
++        DEFAULT_TAG, /* 9 */
++};
++
+ /* key definitions */
+ #define MODKEY Mod1Mask
+ #define TAGKEYS(KEY,TAG) \
+diff -up dwm-6.0/dwm.c dwm-6.0-pango/dwm.c
+--- dwm-6.0/dwm.c	2012-01-18 16:31:14.114282723 +0100
++++ dwm-6.0-pango/dwm.c	2012-01-18 15:13:30.973580004 +0100
+@@ -270,6 +270,15 @@ static void (*handler[LASTEvent]) (XEven
+ 	[PropertyNotify] = propertynotify,
+ 	[UnmapNotify] = unmapnotify
+ };
++
++typedef struct {
++        int layout;
++        int nmaster;
++        Bool showbar;
++        float mfact;
++} TagConfig;
++#define DEFAULT_TAG { -1, -1, -1, -1 }
++
+ static Atom wmatom[WMLast], netatom[NetLast];
+ static Bool running = True;
+ static Cursor cursor[CurLast];
+@@ -278,6 +287,7 @@ static DC dc;
+ static Monitor *mons = NULL, *selmon = NULL;
+ static Window root;
+ 
++
+ /* configuration, allows nested code to access above variables */
+ #include "config.h"
+ 
+@@ -669,6 +679,7 @@ Monitor *
+ createmon(void) {
+ 	Monitor *m;
+ 	unsigned int i;
++        TagConfig def = { 0, nmaster, showbar, mfact }, *c;
+ 
+ 	if(!(m = (Monitor *)calloc(1, sizeof(Monitor))))
+ 		die("fatal: could not malloc() %u bytes\n", sizeof(Monitor));
+@@ -684,10 +695,11 @@ createmon(void) {
+  	/* pertag init */
+  	m->curtag = m->prevtag = 1;
+  	for(i=0; i < LENGTH(tags) + 1 ; i++) {
+- 		m->mfacts[i] = mfact;
+- 		m->nmasters[i] = nmaster;
+- 		m->lts[i] = &layouts[0];
+- 		m->showbars[i] = m->showbar;
++                c = pertag[i].layout == -1 ? &def : &pertag[i];
++                m->mfacts[i] = c->mfact;
++                m->nmasters[i] = c->nmaster;
++                m->lts[i] = &layouts[c->layout];
++                m->showbars[i] = c->showbar;
+  	}
+ 
+ 	return m;
